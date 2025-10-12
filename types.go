@@ -14,6 +14,13 @@ var _ json.Marshaler = (*Timestamp)(nil)
 var _ json.Unmarshaler = (*Timestamp)(nil)
 var _ query.Encoder = (*Timestamp)(nil)
 
+// IsZero returns true if the timestamp is the zero value.
+//
+// This is used for "omitempty" support in query parameters.
+func (t Timestamp) IsZero() bool {
+	return time.Time(t).IsZero()
+}
+
 func (t Timestamp) EncodeValues(key string, v *url.Values) error {
 	s := time.Time(t).Format(time.RFC3339)
 	v.Set(key, s)

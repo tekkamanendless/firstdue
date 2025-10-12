@@ -8,8 +8,8 @@ import (
 
 type GetLogsSettingsRequest struct{}
 
-type GetLogsSettingsResponse []struct {
-	IsFdapiLogEnabled bool `json:"is_fdapi_log_enabled"`
+type GetLogsSettingsResponse struct {
+	IsFdapiConnectorLogEnabled bool `json:"is_fdapi_connector_log_enabled"`
 }
 
 func (c *Client) GetLogsSettings(ctx context.Context, input GetLogsSettingsRequest) (output GetLogsSettingsResponse, err error) {

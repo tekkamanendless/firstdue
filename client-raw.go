@@ -58,11 +58,10 @@ func (c *Client) Raw(ctx context.Context, method string, path string, input any,
 		}
 	}
 
-	httpClient := c.HTTPClient
-	if httpClient == nil {
-		httpClient = http.DefaultClient
+	if c.httpClient == nil {
+		c.httpClient = http.DefaultClient
 	}
-	response, err := httpClient.Do(request)
+	response, err := c.httpClient.Do(request)
 	if err != nil {
 		return fmt.Errorf("request failed: %w", err)
 	}

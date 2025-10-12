@@ -9,8 +9,8 @@ import (
 )
 
 type GetDispatchesRequest struct {
-	Page  int       `url:"page"`
-	Since Timestamp `url:"since"`
+	Page  int       `url:"page,omitempty"`
+	Since Timestamp `url:"since,omitempty"`
 }
 
 type GetDispatchesResponse []struct {
