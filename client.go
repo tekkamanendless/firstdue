@@ -32,3 +32,7 @@ func WithHTTPClient(httpClient *http.Client) ClientOption {
 		c.httpClient = httpClient
 	}
 }
+
+func (c *Client) HTTPClient() *http.Client {
+	return c.httpClient
+}
