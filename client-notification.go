@@ -2,37 +2,103 @@ package firstdue
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
 
+type StringFloat64 float64
+
+func (f StringFloat64) MarshalJSON() ([]byte, error) {
+	return json.Marshal(fmt.Sprintf("%f", f))
+}
+
+func (f *StringFloat64) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	if s == "" {
+		return nil
+	}
+	var v float64
+	if err := json.Unmarshal([]byte(s), &v); err != nil {
+		return err
+	}
+	*f = StringFloat64(v)
+	return nil
+}
+
+type StringUint64 uint64
+
+func (n StringUint64) MarshalJSON() ([]byte, error) {
+	return json.Marshal(fmt.Sprintf("%d", n))
+}
+
+func (n *StringUint64) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	if s == "" {
+		return nil
+	}
+	var v int
+	if err := json.Unmarshal([]byte(s), &v); err != nil {
+		return err
+	}
+	*n = StringUint64(v)
+	return nil
+}
+
 type NfirsNotification struct {
-	DispatchNumber           string    `json:"dispatch_number"`
-	IncidentNumber           string    `json:"incident_number"`
-	DispatchType             string    `json:"dispatch_type"`
-	DispatchIncidentTypeCode string    `json:"dispatch_incident_type_code"`
-	AlarmAt                  Timestamp `json:"alarm_at"`
-	DispatchNotifiedAt       Timestamp `json:"dispatch_notified_at"`
-	Alarms                   int       `json:"alarms"`
-	PlaceName                string    `json:"place_name"`
-	LocationInfo             string    `json:"location_info"`
-	Venue                    string    `json:"venue"`
-	Address                  string    `json:"address"`
-	Unit                     string    `json:"unit"`
-	CrossStreets             string    `json:"cross_streets"`
-	City                     string    `json:"city"`
-	StateCode                string    `json:"state_code"`
-	Latitude                 float64   `json:"latitude"`
-	Longitude                float64   `json:"longitude"`
-	Narratives               string    `json:"narratives"`
-	ShiftName                string    `json:"shift_name"`
-	NotificationType         string    `json:"notification_type"`
+	ID                       uint64          `json:"id,omitempty"`
+	DispatchNumber           string          `json:"dispatch_number"`
+	IncidentNumber           string          `json:"incident_number"`
+	DispatchType             string          `json:"dispatch_type"`
+	DispatchIncidentTypeCode string          `json:"dispatch_incident_type_code"`
+	AlarmAt                  Timestamp       `json:"alarm_at"`
+	DispatchNotifiedAt       Timestamp       `json:"dispatch_notified_at"`
+	Alarms                   int             `json:"alarms"`
+	CADPriority              json.RawMessage `json:"cad_priority"` // TODO: WHAT IS THIS?
+	PlaceName                *string         `json:"place_name"`
+	BusinessName             *string         `json:"business_name"`
+	LocationInfo             *string         `json:"location_info"`
+	Venue                    *string         `json:"venue"`
+	Address                  string          `json:"address"`
+	Unit                     *string         `json:"unit"`
+	CrossStreets             string          `json:"cross_streets"`
+	City                     string          `json:"city"`
+	StateCode                string          `json:"state_code"`
+	ZipCode                  *string         `json:"zip_code"`
+	Latitude                 *StringFloat64  `json:"latitude"`
+	Longitude                *StringFloat64  `json:"longitude"`
+	Narratives               json.RawMessage `json:"narratives"` // TODO: WHAT IS THIS?
+	ShiftName                *string         `json:"shift_name"`
+	NotificationType         *string         `json:"notification_type"`
+	AidTypeCode              *string         `json:"aid_type_code"`
+	AidFDIDNumber            *string         `json:"aid_fdid_number"`
+	AidFDIDNumbers           []string        `json:"aid_fdid_numbers"`
+	ControlledAt             Timestamp       `json:"controlled_at"`
+	OfficerInCharge          *string         `json:"officer_in_charge"` // TODO: WHAT IS THIS?
+	CallCompletedAt          Timestamp       `json:"call_completed_at"`
+	Zone                     json.RawMessage `json:"zone"` // TODO: WHAT IS THIS?
+	HouseNum                 *string         `json:"house_num"`
+	PrefixDirection          *string         `json:"prefix_direction"`
+	StreetName               *string         `json:"street_name"`
+	StreetType               *string         `json:"street_type"`
+	SuffixDirection          *string         `json:"suffix_direction"`
+	EMSIncidentNumber        *string         `json:"ems_incident_number"`
+	EMSResponseNumber        *string         `json:"ems_response_number"`
+	Station                  *string         `json:"station"`
+	EMDCardNumber            *string         `json:"emd_card_number"`
+	PSAPAnsweredAt           *Timestamp      `json:"psap_answered_at"`
 }
 
 type PostNfirsNotificationsRequest NfirsNotification
 
 type PostNfirsNotificationsResponse struct {
-	ID uint64 `json:"id"`
+	ID StringUint64 `json:"id"`
 }
 
 func (c *Client) PostNfirsNotifications(ctx context.Context, input PostNfirsNotificationsRequest) (output PostNfirsNotificationsResponse, err error) {
@@ -49,6 +115,16 @@ func (c *Client) DeleteNfirsNotificationsID(ctx context.Context, id uint64) erro
 		return fmt.Errorf("deletenfirsnotifications: %w", err)
 	}
 	return nil
+}
+
+type GetNfirsNotificationsIDResponse NfirsNotification
+
+func (c *Client) GetNfirsNotificationsID(ctx context.Context, id uint64) (output GetNfirsNotificationsIDResponse, err error) {
+	err = c.Raw(ctx, http.MethodGet, fmt.Sprintf("/v1/nfirs-notifications/%d", id), nil, &output)
+	if err != nil {
+		return output, fmt.Errorf("getnfirsnotificationsid: %w", err)
+	}
+	return output, nil
 }
 
 type PutNfirsNotificationsIDRequest NfirsNotification
@@ -94,12 +170,16 @@ type NfirsNotificationApparatus struct {
 
 type PostNfirsNotificationsIDApparatusesRequest NfirsNotificationApparatus
 
-func (c *Client) PostNfirsNotificationsIDApparatuses(ctx context.Context, id uint64, input PostNfirsNotificationsIDApparatusesRequest) error {
-	err := c.Raw(ctx, http.MethodPost, fmt.Sprintf("/v1/nfirs-notifications/%d/apparatuses", id), input, nil)
+type PostNfirsNotificationsIDApparatusesResponse struct {
+	ID StringUint64 `json:"id"`
+}
+
+func (c *Client) PostNfirsNotificationsIDApparatuses(ctx context.Context, id uint64, input PostNfirsNotificationsIDApparatusesRequest) (output PostNfirsNotificationsIDApparatusesResponse, err error) {
+	err = c.Raw(ctx, http.MethodPost, fmt.Sprintf("/v1/nfirs-notifications/%d/apparatuses", id), input, &output)
 	if err != nil {
-		return fmt.Errorf("postnfirsnotificationsidapparatuses: %w", err)
+		return output, fmt.Errorf("postnfirsnotificationsidapparatuses: %w", err)
 	}
-	return nil
+	return output, nil
 }
 
 type PutNfirsNotificationsIDApparatusesIDRequest NfirsNotificationApparatus
