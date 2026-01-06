@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
 type StringFloat64 float64
@@ -60,7 +61,7 @@ type NfirsNotification struct {
 	AlarmAt                  Timestamp       `json:"alarm_at"`
 	DispatchNotifiedAt       Timestamp       `json:"dispatch_notified_at"`
 	Alarms                   int             `json:"alarms"`
-	CADPriority              json.RawMessage `json:"cad_priority"` // TODO: WHAT IS THIS?
+	CADPriority              json.RawMessage `json:"cad_priority"` // TODO: WHAT IS THIS?  I've only seen null.
 	PlaceName                *string         `json:"place_name"`
 	BusinessName             *string         `json:"business_name"`
 	LocationInfo             *string         `json:"location_info"`
@@ -73,16 +74,16 @@ type NfirsNotification struct {
 	ZipCode                  *string         `json:"zip_code"`
 	Latitude                 *StringFloat64  `json:"latitude"`
 	Longitude                *StringFloat64  `json:"longitude"`
-	Narratives               json.RawMessage `json:"narratives"` // TODO: WHAT IS THIS?
+	Narratives               json.RawMessage `json:"narratives"` // TODO: WHAT IS THIS?  I've only seen null.
 	ShiftName                *string         `json:"shift_name"`
 	NotificationType         *string         `json:"notification_type"`
 	AidTypeCode              *string         `json:"aid_type_code"`
 	AidFDIDNumber            *string         `json:"aid_fdid_number"`
 	AidFDIDNumbers           []string        `json:"aid_fdid_numbers"`
 	ControlledAt             Timestamp       `json:"controlled_at"`
-	OfficerInCharge          *string         `json:"officer_in_charge"` // TODO: WHAT IS THIS?
+	OfficerInCharge          *string         `json:"officer_in_charge"` // TODO: WHAT IS THIS?  I've only seen null.
 	CallCompletedAt          Timestamp       `json:"call_completed_at"`
-	Zone                     json.RawMessage `json:"zone"` // TODO: WHAT IS THIS?
+	Zone                     json.RawMessage `json:"zone"` // TODO: WHAT IS THIS?  I've only seen null.
 	HouseNum                 *string         `json:"house_num"`
 	PrefixDirection          *string         `json:"prefix_direction"`
 	StreetName               *string         `json:"street_name"`
@@ -198,6 +199,19 @@ func (c *Client) DeleteNfirsNotificationsIDApparatusesID(ctx context.Context, id
 		return fmt.Errorf("deletenfirsnotificationsidapparatusesid: %w", err)
 	}
 	return nil
+}
+
+type GetNfirsNotificationsDispatchNumberIDRequest struct{}
+
+type GetNfirsNotificationsDispatchNumberIDResponse NfirsNotification
+
+func (c *Client) GetNfirsNotificationsDispatchNumberID(ctx context.Context, dispatchNumber string, input GetNfirsNotificationsDispatchNumberIDRequest) (output GetNfirsNotificationsDispatchNumberIDResponse, err error) {
+	path := "/v1/nfirs-notifications/dispatch-number/" + url.PathEscape(dispatchNumber)
+	err = c.Raw(ctx, http.MethodGet, path, nil, &output)
+	if err != nil {
+		return output, fmt.Errorf("getnfirsnotificationsdispatchnumberid: %w", err)
+	}
+	return output, nil
 }
 
 type PostNfirsNotificationsNumberIDApparatusesRequest NfirsNotificationApparatus

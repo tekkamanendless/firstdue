@@ -28,6 +28,9 @@ func (t Timestamp) EncodeValues(key string, v *url.Values) error {
 }
 
 func (t Timestamp) MarshalJSON() ([]byte, error) {
+	if t.IsZero() {
+		return json.Marshal("")
+	}
 	s := time.Time(t).Format(time.RFC3339)
 	return json.Marshal(s)
 }
