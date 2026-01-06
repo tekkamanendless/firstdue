@@ -30,6 +30,6 @@ func (c *Client) Authenticate(ctx context.Context, username string, password str
 	if err != nil {
 		return fmt.Errorf("authenticate: %w", err)
 	}
-	c.Token = output.AccessToken
+	c.config.Token = output.AccessToken
 	return nil
 }

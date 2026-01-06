@@ -13,19 +13,12 @@ import (
 	"github.com/tekkamanendless/httperror"
 )
 
-// BaseURL is the default base URL for the FirstDue API.
-const BaseURL = "https://sizeup.firstduesizeup.com/fd-api"
-
 // Raw performs a raw HTTP request to the FirstDue API.
 // It handles authentication, request creation, and response parsing.
 //
 // Input and output are expected to be JSON-serializable structures.  If omitted, they will not be sent or parsed.
 func (c *Client) Raw(ctx context.Context, method string, path string, input any, output any) error {
-	baseURL := c.BaseURL
-	if baseURL == "" {
-		baseURL = BaseURL
-	}
-	fullURL := strings.TrimRight(baseURL, "/") + "/" + strings.TrimLeft(path, "/")
+	fullURL := strings.TrimRight(c.config.BaseURL, "/") + "/" + strings.TrimLeft(path, "/")
 
 	var inputReader io.Reader
 	if input != nil {
@@ -35,21 +28,21 @@ func (c *Client) Raw(ctx context.Context, method string, path string, input any,
 		}
 		inputReader = strings.NewReader(string(inputContents))
 	}
-	request, err := http.NewRequest(method, fullURL, inputReader)
+	request, err := http.NewRequest(strings.ToUpper(method), fullURL, inputReader)
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 	if ctx != nil {
 		request = request.WithContext(ctx)
 	}
-	if c.Token != "" {
-		request.Header.Set("Authorization", "Bearer "+c.Token)
+	if c.config.Token != "" {
+		request.Header.Set("Authorization", "Bearer "+c.config.Token)
 	}
 	if input != nil {
 		request.Header.Set("Content-Type", "application/json")
 	}
 
-	if c.Debug {
+	if c.config.Debug {
 		contents, err := httputil.DumpRequest(request, true)
 		if err != nil {
 			// Oh well; we can't dump the request.
@@ -58,16 +51,17 @@ func (c *Client) Raw(ctx context.Context, method string, path string, input any,
 		}
 	}
 
-	if c.httpClient == nil {
-		c.httpClient = http.DefaultClient
+	httpClient := c.config.HTTPClient
+	if httpClient == nil {
+		httpClient = http.DefaultClient
 	}
-	response, err := c.httpClient.Do(request)
+	response, err := httpClient.Do(request)
 	if err != nil {
 		return fmt.Errorf("request failed: %w", err)
 	}
 	defer response.Body.Close()
 
-	if c.Debug {
+	if c.config.Debug {
 		contents, err := httputil.DumpResponse(response, true)
 		if err != nil {
 			// Oh well; we can't dump the response.
