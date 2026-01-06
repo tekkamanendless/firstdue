@@ -17,11 +17,11 @@ type GetApparatusesResponse struct {
 }
 
 type GetApparatusesResponseApparatus struct {
-	UUID     string `json:"uuid"`
-	Name     string `json:"name"`
-	UnitCode string `json:"unit_code"`
-	UseCode  string `json:"use_code"`
-	UseName  string `json:"use_name"`
+	UUID     string  `json:"uuid"`
+	Name     string  `json:"name"`
+	UnitCode *string `json:"unit_code"` // The unit code that maps back to the dispatch information.
+	UseCode  string  `json:"use_code"`
+	UseName  string  `json:"use_name"`
 }
 
 func (c *Client) GetApparatuses(ctx context.Context, input GetApparatusesRequest) (output GetApparatusesResponse, err error) {
