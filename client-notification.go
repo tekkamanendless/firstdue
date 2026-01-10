@@ -77,7 +77,7 @@ type NfirsNotification struct {
 	Narratives               *string        `json:"narratives"`
 	ShiftName                *string        `json:"shift_name"`
 	NotificationType         *string        `json:"notification_type"`
-	AidTypeCode              *string        `json:"aid_type_code"`
+	AidTypeCode              *int           `json:"aid_type_code"`
 	AidFDIDNumber            *string        `json:"aid_fdid_number"`
 	AidFDIDNumbers           []string       `json:"aid_fdid_numbers"`
 	ControlledAt             Timestamp      `json:"controlled_at"`
