@@ -53,47 +53,47 @@ func (n *StringUint64) UnmarshalJSON(data []byte) error {
 }
 
 type NfirsNotification struct {
-	ID                       uint64          `json:"id,omitempty"`
-	DispatchNumber           string          `json:"dispatch_number"`
-	IncidentNumber           string          `json:"incident_number"`
-	DispatchType             string          `json:"dispatch_type"`
-	DispatchIncidentTypeCode string          `json:"dispatch_incident_type_code"`
-	AlarmAt                  Timestamp       `json:"alarm_at"`
-	DispatchNotifiedAt       Timestamp       `json:"dispatch_notified_at"`
-	Alarms                   int             `json:"alarms"`
-	CADPriority              json.RawMessage `json:"cad_priority"` // TODO: WHAT IS THIS?  I've only seen null.
-	PlaceName                *string         `json:"place_name"`
-	BusinessName             *string         `json:"business_name"`
-	LocationInfo             *string         `json:"location_info"`
-	Venue                    *string         `json:"venue"`
-	Address                  string          `json:"address"`
-	Unit                     *string         `json:"unit"`
-	CrossStreets             string          `json:"cross_streets"`
-	City                     string          `json:"city"`
-	StateCode                string          `json:"state_code"`
-	ZipCode                  *string         `json:"zip_code"`
-	Latitude                 *StringFloat64  `json:"latitude"`
-	Longitude                *StringFloat64  `json:"longitude"`
-	Narratives               json.RawMessage `json:"narratives"` // TODO: WHAT IS THIS?  I've only seen null.
-	ShiftName                *string         `json:"shift_name"`
-	NotificationType         *string         `json:"notification_type"`
-	AidTypeCode              *string         `json:"aid_type_code"`
-	AidFDIDNumber            *string         `json:"aid_fdid_number"`
-	AidFDIDNumbers           []string        `json:"aid_fdid_numbers"`
-	ControlledAt             Timestamp       `json:"controlled_at"`
-	OfficerInCharge          *string         `json:"officer_in_charge"` // TODO: WHAT IS THIS?  I've only seen null.
-	CallCompletedAt          Timestamp       `json:"call_completed_at"`
-	Zone                     json.RawMessage `json:"zone"` // TODO: WHAT IS THIS?  I've only seen null.
-	HouseNum                 *string         `json:"house_num"`
-	PrefixDirection          *string         `json:"prefix_direction"`
-	StreetName               *string         `json:"street_name"`
-	StreetType               *string         `json:"street_type"`
-	SuffixDirection          *string         `json:"suffix_direction"`
-	EMSIncidentNumber        *string         `json:"ems_incident_number"`
-	EMSResponseNumber        *string         `json:"ems_response_number"`
-	Station                  *string         `json:"station"`
-	EMDCardNumber            *string         `json:"emd_card_number"`
-	PSAPAnsweredAt           *Timestamp      `json:"psap_answered_at"`
+	ID                       uint64         `json:"id,omitempty"`
+	DispatchNumber           string         `json:"dispatch_number"`
+	IncidentNumber           string         `json:"incident_number"`
+	DispatchType             string         `json:"dispatch_type"`
+	DispatchIncidentTypeCode string         `json:"dispatch_incident_type_code"`
+	AlarmAt                  Timestamp      `json:"alarm_at"`
+	DispatchNotifiedAt       Timestamp      `json:"dispatch_notified_at"`
+	Alarms                   int            `json:"alarms"`
+	CADPriority              *string        `json:"cad_priority"`
+	PlaceName                *string        `json:"place_name"`
+	BusinessName             *string        `json:"business_name"`
+	LocationInfo             *string        `json:"location_info"`
+	Venue                    *string        `json:"venue"`
+	Address                  string         `json:"address"`
+	Unit                     *string        `json:"unit"`
+	CrossStreets             string         `json:"cross_streets"`
+	City                     string         `json:"city"`
+	StateCode                string         `json:"state_code"`
+	ZipCode                  *string        `json:"zip_code"`
+	Latitude                 *StringFloat64 `json:"latitude"`
+	Longitude                *StringFloat64 `json:"longitude"`
+	Narratives               *string        `json:"narratives"`
+	ShiftName                *string        `json:"shift_name"`
+	NotificationType         *string        `json:"notification_type"`
+	AidTypeCode              *string        `json:"aid_type_code"`
+	AidFDIDNumber            *string        `json:"aid_fdid_number"`
+	AidFDIDNumbers           []string       `json:"aid_fdid_numbers"`
+	ControlledAt             Timestamp      `json:"controlled_at"`
+	OfficerInCharge          *string        `json:"officer_in_charge"`
+	CallCompletedAt          Timestamp      `json:"call_completed_at"`
+	Zone                     *string        `json:"zone"`
+	HouseNum                 *string        `json:"house_num"`
+	PrefixDirection          *string        `json:"prefix_direction"`
+	StreetName               *string        `json:"street_name"`
+	StreetType               *string        `json:"street_type"`
+	SuffixDirection          *string        `json:"suffix_direction"`
+	EMSIncidentNumber        *string        `json:"ems_incident_number"`
+	EMSResponseNumber        *string        `json:"ems_response_number"`
+	Station                  *string        `json:"station"`
+	EMDCardNumber            *string        `json:"emd_card_number"`
+	PSAPAnsweredAt           *Timestamp     `json:"psap_answered_at"`
 }
 
 type PostNfirsNotificationsRequest NfirsNotification
