@@ -3,6 +3,7 @@ package firstdue
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"log/slog"
@@ -79,7 +80,12 @@ func (c *Client) Raw(ctx context.Context, method string, path string, input any,
 		if err := json.NewDecoder(response.Body).Decode(&errorResponse); err != nil {
 			return fmt.Errorf("%w: (failed to decode error response)", httperror.ErrorFromStatus(response.StatusCode))
 		}
-		return fmt.Errorf("%w: %s", httperror.ErrorFromStatus(response.StatusCode), errorResponse.Message)
+
+		var errs []error
+		for _, err := range errorResponse.Errors {
+			errs = append(errs, fmt.Errorf("%s: %s: %s", err.Field, err.Code, err.Message))
+		}
+		return fmt.Errorf("%w: %s: %w", httperror.ErrorFromStatus(response.StatusCode), errorResponse.Message, errors.Join(errs...))
 	}
 
 	if output != nil {
