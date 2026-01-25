@@ -85,7 +85,11 @@ func (c *Client) Raw(ctx context.Context, method string, path string, input any,
 		for _, err := range errorResponse.Errors {
 			errs = append(errs, fmt.Errorf("%s: %s: %s", err.Field, err.Code, err.Message))
 		}
-		return fmt.Errorf("%w: %s: %w", httperror.ErrorFromStatus(response.StatusCode), errorResponse.Message, errors.Join(errs...))
+		if len(errs) == 0 {
+			return fmt.Errorf("%w: %s", httperror.ErrorFromStatus(response.StatusCode), errorResponse.Message)
+		} else {
+			return fmt.Errorf("%w: %s: %w", httperror.ErrorFromStatus(response.StatusCode), errorResponse.Message, errors.Join(errs...))
+		}
 	}
 
 	if output != nil {
