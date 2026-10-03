@@ -54,7 +54,7 @@ func (c *Client) Raw(ctx context.Context, method string, path string, input any,
 
 	httpClient := c.config.HTTPClient
 	if httpClient == nil {
-		httpClient = http.DefaultClient
+		httpClient = &http.Client{}
 	}
 	response, err := httpClient.Do(request)
 	if err != nil {
