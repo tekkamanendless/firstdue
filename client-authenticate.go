@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type PostAuthTokenRequest struct {
@@ -31,5 +32,6 @@ func (c *Client) Authenticate(ctx context.Context, username string, password str
 		return fmt.Errorf("authenticate: %w", err)
 	}
 	c.config.Token = output.AccessToken
+	c.config.TokenExpiration = time.Now().Add(time.Duration(output.ExpiresIn) * time.Second)
 	return nil
 }

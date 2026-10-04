@@ -2,16 +2,18 @@ package firstdue
 
 import (
 	"net/http"
+	"time"
 )
 
 // BaseURL is the default base URL for the FirstDue API.
 const BaseURL = "https://sizeup.firstduesizeup.com/fd-api"
 
 type ClientConfig struct {
-	BaseURL    string       // The base URL for API requests; if empty, the default will be used.
-	Token      string       // The API "Bearer" token for authentication.
-	Debug      bool         // If true, debug information will be printed to the log.
-	HTTPClient *http.Client // The HTTP client to use.
+	BaseURL         string       // The base URL for API requests; if empty, the default will be used.
+	Token           string       // The API "Bearer" token for authentication.
+	TokenExpiration time.Time    // The expiration time of the token (if zero, then the token never expires).
+	Debug           bool         // If true, debug information will be printed to the log.
+	HTTPClient      *http.Client // The HTTP client to use.
 }
 
 // Client is a client for the FirstDue API.
@@ -78,6 +80,17 @@ func (c *Client) BaseURL() string {
 
 func (c *Client) Token() string {
 	return c.config.Token
+}
+
+func (c *Client) TokenExpiration() time.Time {
+	return c.config.TokenExpiration
+}
+
+func (c *Client) TokenExpired() bool {
+	if c.config.TokenExpiration.IsZero() {
+		return false
+	}
+	return time.Now().After(c.config.TokenExpiration)
 }
 
 func (c *Client) Debug() bool {
